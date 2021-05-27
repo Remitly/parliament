@@ -214,6 +214,7 @@ class Policy:
         ignore_private_auditors=False,
         private_auditors_custom_path=None,
         include_community_auditors=False,
+        include_default_auditors=True,
     ):
         """
         Returns False if this policy is so broken that it couldn't be analyzed further.
@@ -265,7 +266,7 @@ class Policy:
 
         # Convert json object to statement objects
         for stmt_json in make_list(self.policy_json["Statement"]):
-            stmt = Statement(stmt_json)
+            stmt = Statement(stmt_json, analyze=include_default_auditors)
             self.statements.append(stmt)
 
         # Do not continue. Further checks will not work with invalid statements.

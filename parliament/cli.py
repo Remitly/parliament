@@ -186,6 +186,12 @@ def main():
         action="store_true",
     )
     parser.add_argument(
+        "--include-default-auditors",
+        help="Disable default auditors",
+        default=False,
+        action="store_true",
+    )
+    parser.add_argument(
         "-v",
         "--verbose",
         help="Increase output verbosity",
@@ -247,6 +253,7 @@ def main():
                     private_auditors_custom_path=args.private_auditors,
                     include_community_auditors=args.include_community_auditors,
                     config=config,
+                    include_default_auditors=args.include_default_auditors,
                 )
                 findings.extend(policy.findings)
 
@@ -288,6 +295,7 @@ def main():
                         private_auditors_custom_path=args.private_auditors,
                         include_community_auditors=args.include_community_auditors,
                         config=config,
+                        include_default_auditors=args.include_default_auditors,
                     )
                     findings.extend(policy.findings)
             for role in auth_details_json.RoleDetailList:
@@ -298,6 +306,7 @@ def main():
                         private_auditors_custom_path=args.private_auditors,
                         include_community_auditors=args.include_community_auditors,
                         config=config,
+                        include_default_auditors=args.include_default_auditors,
                     )
                     findings.extend(policy.findings)
             for group in auth_details_json.GroupDetailList:
@@ -308,6 +317,7 @@ def main():
                         private_auditors_custom_path=args.private_auditors,
                         include_community_auditors=args.include_community_auditors,
                         config=config,
+                        include_default_auditors=args.include_default_auditors,
                     )
                     findings.extend(policy.findings)
     elif args.string:
@@ -316,6 +326,7 @@ def main():
             private_auditors_custom_path=args.private_auditors,
             include_community_auditors=args.include_community_auditors,
             config=config,
+            include_default_auditors=args.include_default_auditors,
         )
         findings.extend(policy.findings)
     elif args.file:
@@ -327,6 +338,7 @@ def main():
             private_auditors_custom_path=args.private_auditors,
             include_community_auditors=args.include_community_auditors,
             config=config,
+            include_default_auditors=args.include_default_auditors,
         )
         findings.extend(policy.findings)
     elif args.directory:
@@ -344,6 +356,7 @@ def main():
                     private_auditors_custom_path=args.private_auditors,
                     include_community_auditors=args.include_community_auditors,
                     config=config,
+                    include_default_auditors=args.include_default_auditors,
                 )
                 findings.extend(policy.findings)
     else:
