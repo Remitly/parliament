@@ -144,7 +144,9 @@ def main():
         default=sys.stdin,
     )
     parser.add_argument(
-        "--directory", help="Provide a path to directory with policy files", type=str
+        "--directory",
+        help="Provide a path to directory with policy files",
+        type=str,
     )
     parser.add_argument(
         "--include_policy_extension",

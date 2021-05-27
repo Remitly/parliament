@@ -287,16 +287,15 @@ class Policy:
                         detail="Duplicate Statement Id '{}' in policy".format(sid),
                     )
 
-        # Look for bad patterns
+        # check s3 bucket privEsc
         self.check_for_bad_patterns()
 
         if not ignore_private_auditors:
-            # Import any private auditing modules
+            # Set path to private auditor files
             private_auditors_directory = "private_auditors"
             private_auditors_directory_path = (
                 Path(os.path.abspath(__file__)).parent / private_auditors_directory
             )
-
             if private_auditors_custom_path is not None:
                 private_auditors_directory_path = private_auditors_custom_path
                 # Ensure we can import from this directory
@@ -304,6 +303,7 @@ class Policy:
 
             private_auditors = {}
 
+            # load private auditor modules
             for path in glob(f"{private_auditors_directory_path}/*.py"):
                 if path.endswith("__init__.py"):
                     continue
@@ -326,7 +326,7 @@ class Policy:
                     )
                 )
 
-            # Run them
+            # Run private auditors
             for m in private_auditors:
                 logging.info(f"*** Checking with private auditor: {m}")
                 private_auditors[m].audit(self)
