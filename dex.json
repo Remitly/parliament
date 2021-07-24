@@ -1,0 +1,16 @@
+{
+    "Version": "2012-10-17",
+    "Id": "123",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Action": "s3:abc",
+        "Resource": "*"
+      },
+      {
+        "Effect": "Allow",
+        "Action": ["s3:*", "ec2:*"],
+        "Resource": "arn:aws:s3:::test/*"
+      }
+    ]
+ }

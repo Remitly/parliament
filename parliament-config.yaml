@@ -1,0 +1,11 @@
+UNKNOWN_ACTION:
+  severity: MEDIUM
+
+RESOURCE_MISMATCH:
+  ignore_locations:
+  - actions: ".*s3.*"
+
+  - filepath: "dex.json"
+    action: "s3:GetObject"
+    # resource:
+    #   - "a"
