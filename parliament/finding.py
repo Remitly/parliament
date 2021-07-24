@@ -4,7 +4,7 @@ class Finding:
     issue = ""
     detail = ""
     location = {}
-    severity = ""
+    severity = "MEDIUM"
     title = ""
     description = ""
     ignore_locations = {}
