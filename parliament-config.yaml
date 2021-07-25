@@ -3,7 +3,8 @@ UNKNOWN_ACTION:
 
 RESOURCE_MISMATCH:
   ignore_locations:
-  - actions: ".*s3.*"
+  - action:
+    - ".*s3.*"
 
   - filepath: "dex.json"
     action: "s3:GetObject"

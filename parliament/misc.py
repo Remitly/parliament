@@ -1,8 +1,5 @@
 import jsoncfg
 
-from icecream import ic
-
-
 def make_list(v):
     """
     If the object is not a list already, it converts it to one
@@ -27,6 +24,11 @@ def make_list(v):
         return a
     return v
 
+def make_simple_list(v):
+    if isinstance(v, list):
+        return v
+    else:
+        return [v]
 
 class ACCESS_DECISION:
     IMPLICIT_DENY = 0
