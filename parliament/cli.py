@@ -52,30 +52,29 @@ def is_finding_filtered(finding, minimum_severity="LOW"):
         # AND the resource to "a" OR "b"
         # It will also ignore a resource that matches "c.*".
 
-        # finding.ignore_locations: [{'actions': '.*s3.*'}, {'action': 's3:GetObject', 'filepath': 'dex.json'}]
-
         for ignore_location in finding.ignore_locations:
             all_match = True
             for location_type, locations_to_ignore in ignore_location.items():
                 has_array_match = False
                 for location_to_ignore in make_simple_list(locations_to_ignore):
-                    ic.disable()
-                    ic(finding.dict())
-                    ic("MIKE", location_to_ignore)
-                    ic.enable()
-                    # TODO: finding.location does not contain anything useful.
-                    # eg. finding.location: {'column': 7, 'filepath': 'dex.json', 'line': 10}
-                    # We need finding to also contain a violation 
                     if re.fullmatch(
                         location_to_ignore.lower(),
-                        str(finding.location.get(location_type, "")).lower(),
+                        get_value_by_location_type(finding, location_type).lower(),
                     ):
                         has_array_match = True
-                if not has_array_match:
-                    all_match = False
-            if all_match:
-                return True
+                        break
+                all_match = has_array_match
+            return all_match
     return False
+
+
+def get_value_by_location_type(finding, location_type) -> str:
+    if location_type in ["Action", "Resource", "Effect", "Condition"]:
+        return finding.associated_statement.get(location_type, "").value
+    elif location_type == "filepath":
+        return finding.location.get(location_type, "")
+    else:
+        raise "Unrecognized location type: " + location_type
 
 
 def print_finding(finding, minimal_output=False, json_output=False):
