@@ -19,7 +19,7 @@ from parliament import (
     config,
     __version__,
 )
-from parliament.misc import make_list
+from parliament.misc import make_simple_list
 
 logger = logging.getLogger(__name__)
 
@@ -33,8 +33,6 @@ def is_finding_filtered(finding, minimum_severity="LOW"):
     ):
         return True
 
-    ic(finding.ignore_locations)
-    ic(type(finding))
     if finding.ignore_locations:
         # The ignore_locations element looks like this:
         #
@@ -54,11 +52,20 @@ def is_finding_filtered(finding, minimum_severity="LOW"):
         # AND the resource to "a" OR "b"
         # It will also ignore a resource that matches "c.*".
 
+        # finding.ignore_locations: [{'actions': '.*s3.*'}, {'action': 's3:GetObject', 'filepath': 'dex.json'}]
+
         for ignore_location in finding.ignore_locations:
             all_match = True
-            for location_type, locations_to_ignore in ic(ignore_location.items()):
+            for location_type, locations_to_ignore in ignore_location.items():
                 has_array_match = False
-                for location_to_ignore in ic(make_list(locations_to_ignore)):
+                for location_to_ignore in make_simple_list(locations_to_ignore):
+                    ic.disable()
+                    ic(finding.dict())
+                    ic("MIKE", location_to_ignore)
+                    ic.enable()
+                    # TODO: finding.location does not contain anything useful.
+                    # eg. finding.location: {'column': 7, 'filepath': 'dex.json', 'line': 10}
+                    # We need finding to also contain a violation 
                     if re.fullmatch(
                         location_to_ignore.lower(),
                         str(finding.location.get(location_type, "")).lower(),
