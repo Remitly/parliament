@@ -418,7 +418,7 @@ class Statement:
         elif "jsoncfg.config_classes" in str(type(location.get("string", ""))):
             location["string"] = location["string"][0]
 
-        self.findings.append(Finding(finding, detail, location))
+        self.findings.append(Finding(finding, detail, location, self.stmt._dict))
 
     def _check_principal(self, principal_element):
         """

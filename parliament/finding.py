@@ -4,15 +4,17 @@ class Finding:
     issue = ""
     detail = ""
     location = {}
+    associated_statement = {} # a dict representing the associated statement
     severity = "MEDIUM"
     title = ""
     description = ""
     ignore_locations = {}
 
-    def __init__(self, issue, detail, location):
+    def __init__(self, issue, detail, location, associated_statement={}):
         self.issue = issue
         self.detail = detail
         self.location = location
+        self.associated_statement = associated_statement
 
     def dict(self):
         return {
@@ -23,6 +25,7 @@ class Finding:
             "title": self.title,
             "description": self.description,
             "ignore_locations": self.ignore_locations,
+            "associated_statement": self.associated_statement,
             }
 
     def __repr__(self):
