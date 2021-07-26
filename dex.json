@@ -4,13 +4,11 @@
     "Statement": [
       {
         "Effect": "Allow",
-        "Action": "s3:abc",
-        "Resource": "*"
-      },
-      {
-        "Effect": "Allow",
-        "Action": ["s3:*", "ec2:*"],
-        "Resource": "arn:aws:s3:::test/*"
+        "Action": [
+          "s3:PutObject",
+          "s3:ListBucket"
+        ],
+        "Resource": ["*"]
       }
     ]
  }
