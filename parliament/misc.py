@@ -25,6 +25,13 @@ def make_list(v):
     return v
 
 def make_simple_list(v):
+    """wrap a element in a list if it's not already a list, convert jsoncfg scalar and array values to list
+    [1] -> [1]
+    1 -> [1]
+    jsoncfg_scalar(1,2) -> [1,2]
+    jsoncfg_arr(1,2) -> [1,2]
+    """
+
     if isinstance(v, list):
         return v
     else:

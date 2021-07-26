@@ -19,7 +19,7 @@ from parliament import (
     config,
     __version__,
 )
-from parliament.misc import make_simple_list
+from parliament.misc import make_simple_list, make_list
 
 logger = logging.getLogger(__name__)
 
@@ -57,25 +57,51 @@ def is_finding_filtered(finding, minimum_severity="LOW"):
             for location_type, locations_to_ignore in ignore_location.items():
                 has_array_match = False
                 for location_to_ignore in make_simple_list(locations_to_ignore):
-                    if re.fullmatch(
-                        location_to_ignore.lower(),
-                        get_value_by_location_type(finding, location_type).lower(),
-                    ):
-                        has_array_match = True
-                        break
-                all_match = has_array_match
+                    for location_type_value in values_by_location_type(finding, location_type):
+                        if re.fullmatch(
+                            location_to_ignore.lower(),
+                            location_type_value.lower(),
+                        ):
+                            has_array_match = True
+                            break
+                    all_match = has_array_match
             return all_match
     return False
 
 
-def get_value_by_location_type(finding, location_type) -> str:
+def values_by_location_type(finding, location_type) -> list:
+    '''Returns the value(s) of in a finding's statement that corresponds to a location type.
+     eg. for the following statement that triggered the RESOURCE_STAR finding, the values of  'Action' location_type is
+     ['s3:PutObject', 's3:ListObject']
+      {
+        "Effect": "Allow",
+        "Action": [
+          "s3:PutObject",
+          "s3:ListBucket"
+        ],
+        "Resource": ["*"]
+      }
+    '''
     if location_type in ["Action", "Resource", "Effect", "Condition"]:
-        return finding.associated_statement.get(location_type, "").value
+        return make_simple_list(value_from_jsoncfg_object(finding.associated_statement.get(location_type)))
     elif location_type == "filepath":
-        return finding.location.get(location_type, "")
+        return make_simple_list(finding.location.get(location_type, ""))
     else:
         raise "Unrecognized location type: " + location_type
 
+def value_from_jsoncfg_object(jsoncfg_object):
+    # returns a list or a string
+    if jsoncfg.node_is_scalar(jsoncfg_object) or jsoncfg.node_is_object(jsoncfg_object):
+        return jsoncfg_object.value
+    elif jsoncfg.node_is_array(jsoncfg_object):
+        # recursively convert the jsoncfg_object to str or list
+        result = []
+        for ele in list(jsoncfg_object):
+            result.append(value_from_jsoncfg_object(ele))
+        return result
+    else:
+        # do nothing if jsoncfg_object is not a jsoncfg object
+        return jsoncfg_object
 
 def print_finding(finding, minimal_output=False, json_output=False):
     if minimal_output:
@@ -360,11 +386,7 @@ def main():
     filtered_findings = []
     for finding in findings:
         finding = enhance_finding(finding)
-        # FIXME: is_finding_filtered returns False when there are configuration overrides and should return true
-        # This need to be looked at tomorrow
-        # If we can get ignore working on Thursday, then we set up the ignore list
-        # Otherwise, comment out the code that runs default checks and start working on custom checks on friday so we have something to show
-        if not ic(is_finding_filtered(finding, args.minimum_severity)):
+        if not is_finding_filtered(finding, args.minimum_severity):
             filtered_findings.append(finding)
 
     if len(filtered_findings) == 0:

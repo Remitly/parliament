@@ -28,6 +28,25 @@ class TestIsFindingFiltered(unittest.TestCase):
             ignore_private_auditors=True,
         )
 
+    def get_multi_action_policy(self):
+        return analyze_policy_string(
+            '''{
+    "Version": "2012-10-17",
+    "Id": "123",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Action": [
+          "s3:PutObject",
+          "s3:ListBucket"
+        ],
+        "Resource": ["*"]
+      }
+    ]
+ }''',
+            ignore_private_auditors=True,
+        )
+
     def test_is_not_filtered(self):
         finding = self.get_policy().findings[0]
         finding.ignore_locations = []
@@ -59,7 +78,6 @@ class TestIsFindingFiltered(unittest.TestCase):
         ]
         assert_true(is_finding_filtered(finding))
 
-# TODO debug those
     def test_is_filtered_single_action_with_single_resource(self):
         finding = self.get_policy().findings[0]
         finding.ignore_locations = [{'Action': 's3:abc', 'Resource': 'arn:aws:s3:::bucket/obj1'}]
@@ -69,3 +87,22 @@ class TestIsFindingFiltered(unittest.TestCase):
         finding = self.get_policy().findings[0]
         finding.ignore_locations = [{'Action': 's3:abc', 'Resource': ['arn:aws:s3:::bucket/obj1', 'arn:aws:s3:::bucket/not_a_finding']}]
         assert_true(is_finding_filtered(finding))
+
+
+    # TODO: fails because the ignore logic implemented at cli.py#is_finding_filtered:L61-66
+    # sets the filter status to true as soon as there's one match from a list of ignored actions
+    # Instead we need ALL actions in the checked statement to match an item in the ignore list
+    # to ignore a check
+    def test_is_filtered_multiple_actions_with_single_resource(self):
+        finding = self.get_multi_action_policy().findings[0]
+        finding.ignore_locations = [
+            {
+                'Action': [
+                    's3:PutObject',
+                ],
+                'Resource': [
+                    '.*'
+                ]
+            }
+        ]
+        assert_false(is_finding_filtered(finding))
