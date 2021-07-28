@@ -10,8 +10,6 @@ from os.path import abspath
 from os.path import join
 from pathlib import Path
 
-from icecream import ic
-
 from parliament import (
     analyze_policy_string,
     enhance_finding,
