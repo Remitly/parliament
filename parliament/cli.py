@@ -57,7 +57,9 @@ def is_finding_filtered(finding, minimum_severity="LOW"):
             for location_type, locations_to_ignore in ignore_location.items():
                 has_array_match = False
                 for location_to_ignore in make_simple_list(locations_to_ignore):
-                    for location_type_value in values_by_location_type(finding, location_type):
+                    for location_type_value in values_by_location_type(
+                        finding, location_type
+                    ):
                         if re.fullmatch(
                             location_to_ignore.lower(),
                             location_type_value.lower(),
@@ -70,24 +72,27 @@ def is_finding_filtered(finding, minimum_severity="LOW"):
 
 
 def values_by_location_type(finding, location_type) -> list:
-    '''Returns the value(s) of in a finding's statement that corresponds to a location type.
-     eg. for the following statement that triggered the RESOURCE_STAR finding, the values of  'Action' location_type is
-     ['s3:PutObject', 's3:ListObject']
-      {
-        "Effect": "Allow",
-        "Action": [
-          "s3:PutObject",
-          "s3:ListBucket"
-        ],
-        "Resource": ["*"]
-      }
-    '''
+    """Returns the value(s) of in a finding's statement that corresponds to a location type.
+    eg. for the following statement that triggered the RESOURCE_STAR finding, the values of  'Action' location_type is
+    ['s3:PutObject', 's3:ListObject']
+     {
+       "Effect": "Allow",
+       "Action": [
+         "s3:PutObject",
+         "s3:ListBucket"
+       ],
+       "Resource": ["*"]
+     }
+    """
     if location_type in ["Action", "Resource", "Effect", "Condition"]:
-        return make_simple_list(value_from_jsoncfg_object(finding.associated_statement.get(location_type)))
+        return make_simple_list(
+            value_from_jsoncfg_object(finding.associated_statement.get(location_type))
+        )
     elif location_type == "filepath":
         return make_simple_list(finding.location.get(location_type, ""))
     else:
         raise "Unrecognized location type: " + location_type
+
 
 def value_from_jsoncfg_object(jsoncfg_object):
     # returns a list or a string
@@ -102,6 +107,7 @@ def value_from_jsoncfg_object(jsoncfg_object):
     else:
         # do nothing if jsoncfg_object is not a jsoncfg object
         return jsoncfg_object
+
 
 def print_finding(finding, minimal_output=False, json_output=False):
     if minimal_output:
@@ -237,8 +243,6 @@ def main():
     log_format = "%(message)s"
 
     # We want to silence dependencies
-    logging.getLogger("botocore").setLevel(logging.CRITICAL)
-    logging.getLogger("boto3").setLevel(logging.CRITICAL)
     logging.getLogger("urllib3").setLevel(logging.CRITICAL)
 
     if args.verbose:
