@@ -33,8 +33,9 @@ class Finding:
 
     def __repr__(self):
         """Return a string for printing"""
-        return f"""Severity: {self.severity}
+        return f"""-------
+        Severity: {self.severity}
         Issue: {self.issue}
+        File: {self.location["filepath"]}
         Detail: {self.detail}
-        Location: {self.location}
         Statement: {jsoncfg_to_dict(self.associated_statement)}"""
