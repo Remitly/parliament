@@ -1,10 +1,13 @@
+from parliament.misc import jsoncfg_to_dict
+
+
 class Finding:
     """Class for storing findings"""
 
     issue = ""
     detail = ""
     location = {}
-    associated_statement = {} # a dict representing the associated statement
+    associated_statement = {}  # a dict representing the associated statement
     severity = "MEDIUM"
     title = ""
     description = ""
@@ -18,7 +21,7 @@ class Finding:
 
     def dict(self):
         return {
-            "issue" : self.issue,
+            "issue": self.issue,
             # "detail" : self.detail,
             "location": self.location,
             "severity": self.severity,
@@ -26,8 +29,12 @@ class Finding:
             "description": self.description,
             "ignore_locations": self.ignore_locations,
             "associated_statement": self.associated_statement,
-            }
+        }
 
     def __repr__(self):
         """Return a string for printing"""
-        return "{} - {} - {}".format(self.issue, self.detail, self.location)
+        return f"""Severity: {self.severity}
+        Issue: {self.issue}
+        Detail: {self.detail}
+        Location: {self.location}
+        Statement: {jsoncfg_to_dict(self.associated_statement)}"""

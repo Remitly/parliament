@@ -17,7 +17,7 @@ from parliament import (
     config,
     __version__,
 )
-from parliament.misc import make_simple_list, make_list
+from parliament.misc import make_simple_list, make_list, value_from_jsoncfg_object
 
 logger = logging.getLogger(__name__)
 
@@ -92,21 +92,6 @@ def values_by_location_type(finding, location_type) -> list:
         raise "Unrecognized location type: " + location_type
 
 
-def value_from_jsoncfg_object(jsoncfg_object):
-    # returns a list or a string
-    if jsoncfg.node_is_scalar(jsoncfg_object) or jsoncfg.node_is_object(jsoncfg_object):
-        return jsoncfg_object.value
-    elif jsoncfg.node_is_array(jsoncfg_object):
-        # recursively convert the jsoncfg_object to str or list
-        result = []
-        for ele in list(jsoncfg_object):
-            result.append(value_from_jsoncfg_object(ele))
-        return result
-    else:
-        # do nothing if jsoncfg_object is not a jsoncfg object
-        return jsoncfg_object
-
-
 def print_finding(finding, minimal_output=False, json_output=False):
     if minimal_output:
         print("{}".format(finding.issue))
@@ -124,15 +109,7 @@ def print_finding(finding, minimal_output=False, json_output=False):
             )
         )
     else:
-        print(
-            "{} - {} - {} - {} - {}".format(
-                finding.severity,
-                finding.title,
-                finding.description,
-                finding.detail,
-                finding.location,
-            )
-        )
+        print(finding)
 
 
 def find_files(directory, exclude_pattern=None, policy_extension=""):
