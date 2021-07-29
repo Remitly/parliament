@@ -66,12 +66,14 @@ def jsoncfg_to_dict(jsoncfg_object):
         for ele in list(jsoncfg_object):
             result.append(value_from_jsoncfg_object(ele))
         return result
-    else:
-        # do nothing if jsoncfg_object is not a jsoncfg object
+    elif isinstance(jsoncfg_object, dict):
         d = {}
-        for k in dict(jsoncfg_object).keys():
+        for k in jsoncfg_object.keys():
             d[k] = jsoncfg_to_dict(jsoncfg_object[k])
         return d
+    else:
+        # do nothing and return argument
+        return jsoncfg_object
 
 
 class ACCESS_DECISION:
