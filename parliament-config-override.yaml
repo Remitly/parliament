@@ -1,0 +1,32 @@
+# Strong signal of introducing typo or actions that are no longer supported
+UNKNOWN_ACTION:
+  title: "Unknown action: Please check if this is a supported AWS action, and fix the finding if it's not. AWS sometimes removes actions. If this is a new action, then update Parliament."
+  severity: HIGH
+
+# Too many role files currently contain "Resource" : "*"
+# Revisit after having least privileged roles
+RESOURCE_STAR:
+  ignore_locations:
+    - Resource:
+       - "^\\*$"
+
+# False positive
+NO_VERSION:
+  severity: LOW
+
+# False positive
+MALFORMED:
+  ignore_locations:
+    - Action:
+      - "sts:AssumeRole"
+
+# Too noisy
+RESOURCE_MISMATCH:
+  severity: LOW
+
+# Does not recognize some of the emr conditions
+# Ignore for now
+UNKNOWN_CONDITION_FOR_ACTION:
+  ignore_locations:
+    - Resource:
+       - "^arn:aws:elasticmapreduce.*$"
