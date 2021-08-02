@@ -230,8 +230,8 @@ def main():
         raise Exception("You cannot choose both minimal and json output")
 
     # If I have some stdin to read it should be my policy, file input should indicate stdin
-    if not sys.stdin.isatty() and args.file.name != "<stdin>":
-        parser.error("You cannot pass a file with --file and use stdin together")
+    # if not sys.stdin.isatty() and args.file.name != "<stdin>":
+    #     parser.error("You cannot pass a file with --file and use stdin together")
 
     # Change the exit status if there are errors
     exit_status = 0
