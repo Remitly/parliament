@@ -47,7 +47,7 @@ MISMATCHED_TYPE_OPERATION_TO_NULL:
 
 MISMATCHED_TYPE_BUT_USABLE:
   title: Mismatched type, but usable. For example, you may be using a StringEquals to match against an ARN, when an ArnEquals would be more correct. 
-  severity: MEDIUM
+  severity: LOW
   group: INVALID
 
 MISMATCHED_TYPE:
@@ -56,13 +56,13 @@ MISMATCHED_TYPE:
   group: INVALID
 
 UNKNOWN_ACTION:
-  title: Unknow action
-  severity: MEDIUM
+  title: Unknown action
+  severity: LOW
   group: INVALID
 
 UNKNOWN_PREFIX:
   title: Unknown prefix
-  severity: MEDIUM
+  severity: LOW
   group: INVALID
 
 UNKNOWN_CONDITION_FOR_ACTION:
@@ -79,7 +79,7 @@ BAD_PATTERN_FOR_MFA:
 INVALID_SID:
   title: Invalid SID
   description: Statement Sid does match regex [0-9A-Za-z]*
-  severity: MEDIUM
+  severity: LOW
   group: INVALID
 
 INVALID_ARN:
@@ -90,7 +90,7 @@ INVALID_ARN:
 
 NO_VERSION:
   title: Policy does not contain a Version element
-  severity: MEDIUM
+  severity: LOW
   group: NOT_IDEAL
 
 INVALID_VERSION:
@@ -102,7 +102,7 @@ INVALID_VERSION:
 OLD_VERSION:
   title: Old version
   description: "Older version used. Variables will not be allowed."
-  severity: MEDIUM
+  severity: LOW
   group: OLD
 
 RESOURCE_MISMATCH:
@@ -112,7 +112,7 @@ RESOURCE_MISMATCH:
 
 RESOURCE_STAR:
   title: Unnecessary use of Resource *
-  severity: MEDIUM
+  severity: LOW
   group: NOT_IDEAL
 
 UNKNOWN_OPERATOR:
