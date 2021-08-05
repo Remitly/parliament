@@ -866,7 +866,7 @@ class Statement:
                     detail=f"Region expected to be of form like us-east-1 but got {parts[3:3+1]}",
                     location=resource,
                 )
-            elif not is_valid_account_id(parts[4]):
+            elif not is_valid_account_id(parts[4]) and parts[4] != "global-cluster":
                 has_malformed_resource = True
                 self.add_finding(
                     "INVALID_ARN",
