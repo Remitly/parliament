@@ -617,13 +617,13 @@ class Statement:
                     # if operator_type_requirement.lower() == 'string' and condition_type.lower() = 'arn':
                     #     # Ignore these.
                     #     pass
-                    documenation_condition_type = translate_documentation_types(
+                    documentation_condition_type = translate_documentation_types(
                         condition_type
                     )
-                    if operator_type_requirement != documenation_condition_type:
+                    if operator_type_requirement != documentation_condition_type:
                         if (
                             operator_type_requirement == "String"
-                            and documenation_condition_type == "Arn"
+                            and documentation_condition_type == "Arn"
                         ):
                             self.add_finding(
                                 "MISMATCHED_TYPE_BUT_USABLE",
