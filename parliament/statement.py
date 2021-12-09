@@ -889,6 +889,9 @@ class Statement:
             actions_without_matching_resources = []
             # Ensure the required resources for each action exist
             # Iterate through each action
+
+            all_possible_resources_for_stmt = []
+
             for action_struct in expanded_actions:
                 privilege_info = get_privilege_info(
                     action_struct["service"], action_struct["action"]
@@ -899,6 +902,7 @@ class Statement:
                     len(privilege_info["resource_types"]) == 1
                     and privilege_info["resource_types"][0]["resource_type"] == ""
                 ):
+                    all_possible_resources_for_stmt.append("*")
                     match_found = False
                     for resource in resources:
                         if resource.value == "*":
@@ -924,6 +928,8 @@ class Statement:
                     arn_format = get_arn_format(
                         resource_type, privilege_info["service_resources"]
                     )
+
+                    all_possible_resources_for_stmt.append(arn_format)
 
                     # At least one resource has to match the action's required resources
                     match_found = False
@@ -961,6 +967,23 @@ class Statement:
                     detail=actions_without_matching_resources,
                     location=self.stmt,
                 )
+
+            # If the Statement is applied to specific wildcarded Resources,
+            # but those Resources span all possible Resources that the Actions
+            # can touch, then the Statement is effectively unbounded, even without
+            # an explicit "*"
+            specified_resources = {r.value for r in resources}
+
+            # Only handle the cases where "*" is not needed (some Actions can
+            # only be scoped to "*") and it's not explcitly provided (already
+            # handled by RESOURCE_STAR). Otherwise, this check accidentally
+            # flags Actions that have - and need - Resource "*".
+            if (
+                "*" not in all_possible_resources_for_stmt
+                and "*" not in specified_resources
+                and specified_resources == set(all_possible_resources_for_stmt)
+            ):
+                self.add_finding("RESOURCE_EFFECTIVELY_STAR", location=self.stmt)
 
         # If conditions exist, it will be an element, which was previously made into a list
         if len(conditions) == 1:
