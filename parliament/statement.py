@@ -906,12 +906,16 @@ class Statement:
                 return formats
 
             actions_without_matching_resources = []
+            all_possible_resources_for_stmt = []
+
             # expanded_actions is the list of fully expanded actions from wildcard
             for action in expanded_actions:
                 privilege_info = get_privilege_info(action["service"], action["action"])
                 has_match = False
 
                 if _action_requires_star_resource(action):
+                    all_possible_resources_for_stmt.append("*")
+
                     if "*" in [r.value for r in resources]:
                         # "*" resource matches any action
                         has_match = True
@@ -930,6 +934,8 @@ class Statement:
                     privilege_info["resource_types"],
                     privilege_info["service_resources"],
                 )
+
+                all_possible_resources_for_stmt += [f["format"]for f in arn_formats]
 
                 # loop through every resources to find at least one that match the action
                 for resource in resources:
@@ -953,7 +959,6 @@ class Statement:
                             "required_format": arn_formats,
                         }
                     )
-            # end of for action
 
             if actions_without_matching_resources:
                 # We have location info for each action via the variable `actions` which is a ConfigJSONArray, but
@@ -964,6 +969,23 @@ class Statement:
                     detail=actions_without_matching_resources,
                     location=self.stmt,
                 )
+
+            # If the Statement is applied to specific wildcarded Resources,
+            # but those Resources span all possible Resources that the Actions
+            # can touch, then the Statement is effectively unbounded, even without
+            # an explicit "*"
+            specified_resources = {r.value for r in resources}
+
+            # Only handle the cases where "*" is not needed (some Actions can
+            # only be scoped to "*") and it's not explcitly provided (already
+            # handled by RESOURCE_STAR). Otherwise, this check accidentally
+            # flags Actions that have - and need - Resource "*".
+            if (
+                "*" not in all_possible_resources_for_stmt
+                and "*" not in specified_resources
+                and specified_resources == set(all_possible_resources_for_stmt)
+            ):
+                self.add_finding("RESOURCE_EFFECTIVELY_STAR", location=self.stmt)
 
         # If conditions exist, it will be an element, which was previously made into a list
         if len(conditions) == 1:
